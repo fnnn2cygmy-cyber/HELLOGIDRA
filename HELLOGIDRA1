@@ -632,9 +632,9 @@ local chamsToggle = FuncTab:CreateToggle({
                     if pl and pl.Team == player.Team and pl.Team ~= nil then
                         isEnemy = false
                     end
-                    
+
                     local color = isEnemy and chamsSettings.EnemyColor or chamsSettings.TeamColor
-                    
+
                     for _, part in pairs(character:GetDescendants()) do
                         if part:IsA("BasePart") and not part:FindFirstChild("Highlight") then
                             local highlight = Instance.new("Highlight")
@@ -1138,7 +1138,7 @@ OtherScriptsTab:CreateButton({
 })
 
 -- ============================================
--- ДОБАВЛЕНА НОВАЯ КНОПКА
+-- ДОБАВЛЕНА НОВАЯ КНОПКА UGC Animations
 -- ============================================
 OtherScriptsTab:CreateButton({
    Name = "UGC Animations",
@@ -1577,7 +1577,7 @@ local disableAllButton = SettingsTab:CreateButton({
     Name = "❌ ОТКЛЮЧИТЬ ВСЁ",
     Callback = function()
         Sense.Unload()
-        
+
         if chamsConnection then
             chamsConnection:Disconnect()
             chamsConnection = nil
@@ -1593,17 +1593,17 @@ local disableAllButton = SettingsTab:CreateButton({
                 end
             end
         end
-        
+
         if noclip then
             noclip:Disconnect()
             noclip = nil
         end
-        
+
         aimbotEnabled = false
         fovCircle.Visible = false
-        
+
         antiAim = false
-        
+
         if spinBot then
             for i,v in pairs(hrp:GetChildren()) do
                 if v.Name == "Spinning" then
@@ -1613,20 +1613,20 @@ local disableAllButton = SettingsTab:CreateButton({
             plr.Character.Humanoid.AutoRotate = true
             spinBot = false
         end
-        
+
         game.Lighting.Ambient = ambient
         game.Lighting.OutdoorAmbient = outdoor_ambient
         game.Lighting.FogStart = fogstart
         game.Lighting.Brightness = brightness
         game.Lighting.ClockTime = clocktime
         game.Lighting.GlobalShadows = shadows
-        
+
         for i,v in pairs(getconnections(player.Idled)) do
             v:Enable()
         end
-        
+
         autoez = false
-        
+
         Rayfield:Notify({
             Title = "❌ Всё отключено!",
             Content = "Все функции были деактивированы",
