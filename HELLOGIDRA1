@@ -210,6 +210,62 @@ fovCircle.Visible = false
 
 local currentTarget = nil
 
+-- ============================================
+-- FPS СЧЁТЧИК
+-- ============================================
+local fpsEnabled = false
+local fpsLabel = nil
+local fpsConnection = nil
+
+local function toggleFPS(value)
+    fpsEnabled = value
+    if value then
+        if not fpsLabel then
+            fpsLabel = Drawing.new("Text")
+            fpsLabel.Visible = true
+            fpsLabel.Color = Color3.fromRGB(0, 255, 0)
+            fpsLabel.Size = 18
+            fpsLabel.Center = false
+            fpsLabel.Outline = true
+            fpsLabel.OutlineColor = Color3.fromRGB(0, 0, 0)
+            fpsLabel.Position = Vector2.new(10, 10)
+            fpsLabel.Text = "FPS: 0"
+        end
+        
+        local lastTime = tick()
+        local frameCount = 0
+        
+        fpsConnection = RunService.RenderStepped:Connect(function()
+            frameCount = frameCount + 1
+            local currentTime = tick()
+            if currentTime - lastTime >= 1 then
+                local fps = math.floor(frameCount / (currentTime - lastTime))
+                fpsLabel.Text = "FPS: " .. tostring(fps)
+                frameCount = 0
+                lastTime = currentTime
+                
+                if fps >= 60 then
+                    fpsLabel.Color = Color3.fromRGB(0, 255, 0)
+                elseif fps >= 30 then
+                    fpsLabel.Color = Color3.fromRGB(255, 255, 0)
+                else
+                    fpsLabel.Color = Color3.fromRGB(255, 0, 0)
+                end
+            end
+        end)
+    else
+        if fpsConnection then
+            fpsConnection:Disconnect()
+            fpsConnection = nil
+        end
+        if fpsLabel then
+            fpsLabel.Visible = false
+            fpsLabel:Remove()
+            fpsLabel = nil
+        end
+    end
+end
+
 local function checkTeam(player)
     if teamCheck and player.Team == plr.Team then
         return true
@@ -1552,4 +1608,99 @@ local Button = SexTab:CreateButton({
    Callback = function()
 loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
    end,
+})
+
+-- ============================================
+-- ВКЛАДКА SETTINGS
+-- ============================================
+local SettingsTab = Window:CreateTab("Settings", "settings")
+
+local SettingsSection = SettingsTab:CreateSection("Управление")
+
+-- FPS СЧЕТЧИК
+local fpsToggle = SettingsTab:CreateToggle({
+    Name = "Показать FPS",
+    CurrentValue = false,
+    Flag = "fps_counter",
+    Callback = function(value)
+        toggleFPS(value)
+    end
+})
+
+-- КНОПКА ОТКЛЮЧЕНИЯ ВСЕГО
+local disableAllButton = SettingsTab:CreateButton({
+    Name = "❌ ОТКЛЮЧИТЬ ВСЁ",
+    Callback = function()
+        Sense.Unload()
+        
+        if chamsConnection then
+            chamsConnection:Disconnect()
+            chamsConnection = nil
+        end
+        for _, pl in pairs(game.Players:GetPlayers()) do
+            if pl ~= player and pl.Character then
+                for _, part in pairs(pl.Character:GetDescendants()) do
+                    if part:IsA("BasePart") and part:GetAttribute("highlighted") then
+                        local highlight = part:FindFirstChild("Highlight")
+                        if highlight then highlight:Destroy() end
+                        part:SetAttribute("highlighted", nil)
+                    end
+                end
+            end
+        end
+        
+        if noclip then
+            noclip:Disconnect()
+            noclip = nil
+        end
+        
+        aimbotEnabled = false
+        fovCircle.Visible = false
+        
+        antiAim = false
+        
+        if spinBot then
+            for i,v in pairs(hrp:GetChildren()) do
+                if v.Name == "Spinning" then
+                    v:Destroy()
+                end
+            end
+            plr.Character.Humanoid.AutoRotate = true
+            spinBot = false
+        end
+        
+        game.Lighting.Ambient = ambient
+        game.Lighting.OutdoorAmbient = outdoor_ambient
+        game.Lighting.FogStart = fogstart
+        game.Lighting.Brightness = brightness
+        game.Lighting.ClockTime = clocktime
+        game.Lighting.GlobalShadows = shadows
+        
+        for i,v in pairs(getconnections(player.Idled)) do
+            v:Enable()
+        end
+        
+        autoez = false
+        toggleFPS(false)
+        
+        Rayfield:Notify({
+            Title = "❌ Всё отключено!",
+            Content = "Все функции были деактивированы",
+            Duration = 3,
+        })
+    end
+})
+
+-- Кнопка перезагрузки скрипта
+local restartButton = SettingsTab:CreateButton({
+    Name = "🔄 Перезагрузить скрипт",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "🔄 Перезагрузка...",
+            Content = "Скрипт будет перезагружен",
+            Duration = 2,
+        })
+        task.wait(1)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/fnnn2cygmy-cyber/HELLOOGIDRAA123/refs/heads/main/HELLOOGIDRAA123"))()
+    end
 })
