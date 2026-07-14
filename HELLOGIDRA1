@@ -211,7 +211,7 @@ fovCircle.Visible = false
 local currentTarget = nil
 
 -- ============================================
--- FPS СЧЕТЧИК
+-- FPS СЧЕТЧИК (РАБОЧАЯ ВЕРСИЯ)
 -- ============================================
 local fpsEnabled = false
 local fpsLabel = nil
